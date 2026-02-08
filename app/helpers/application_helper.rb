@@ -381,12 +381,10 @@ module ApplicationHelper
   end
 
   def rest_url
-    # Split the URL into protocol and path parts
-    protocol, path = $REST_URL.split("://", 2)
-
-    # Remove the last '/' in the path part
-    cleaned_path = path.chomp('/')
-    # Reconstruct the cleaned URL
+    raw_url = ENV.fetch("PUBLIC_API_URL", $REST_URL).to_s
+    protocol, path = raw_url.split("://", 2)
+    cleaned_path = path.to_s.chomp('/')
+    return raw_url.chomp('/') if protocol.to_s.empty? || cleaned_path.empty?
     "#{protocol}://#{cleaned_path}"
   end
   

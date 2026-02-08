@@ -295,12 +295,14 @@ $ONTOPORTAL_WEBSITE_LINK = "https://ontoportal.org/"
 $ONTOPORTAL_GITHUB_REPO = "https://github.com/ontoportal"
 
 $GITHUB_ISSUES = "https://github.com/agroportal/project-management/issues"
+$PUBLIC_REST_URL = ENV['PUBLIC_API_URL'].to_s.empty? ? $REST_URL : ENV['PUBLIC_API_URL']
+
 $FOOTER_LINKS = {
   social: [
     { logo: "social/people.svg", link: "https://github.com/orgs/agroportal/people" },
     { logo: "social/github.svg", link: "https://github.com/agroportal" },
     { logo: "social/twitter.svg", link: "https://twitter.com/lagroportal" },
-    { logo: "json.svg", link: $REST_URL },
+    { logo: "json.svg", link: $PUBLIC_REST_URL },
     { logo: "summary/sparql.svg", link: "#{$SPARQL_URL}"},
     { logo: "social/email.svg", link: "mailto:#{$ANNOUNCE_LIST}" },
   ],
