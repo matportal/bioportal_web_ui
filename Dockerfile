@@ -17,9 +17,14 @@ ENV RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true" \
     RAILS_ENV="production" \
     NODE_ENV="production" \
+    UI_THEME="ontoportal" \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT="development test" \
     SECRET_KEY_BASE_DUMMY=1
+
+# Allow builds to precompile assets for a specific theme (e.g. `matportal`).
+ARG UI_THEME="ontoportal"
+ENV UI_THEME="${UI_THEME}"
 
 COPY Gemfile* .
 RUN gem install bundler
@@ -38,7 +43,8 @@ RUN cp config/bioportal_config_env.rb.sample config/bioportal_config_production.
 
 RUN if [ "${RAILS_ENV}" != "development" ]; then \
   bundle exec bootsnap precompile --gemfile app/ lib/ && \
-  SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile; fi
+  # Asset precompile loads the Rails env; set a dummy API_URL so config constants don't crash.
+  SECRET_KEY_BASE_DUMMY=1 API_URL=http://localhost:9393 UI_THEME="${UI_THEME}" ./bin/rails assets:precompile; fi
 
 EXPOSE 3000
 

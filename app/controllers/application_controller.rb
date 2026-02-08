@@ -154,6 +154,15 @@ class ApplicationController < ActionController::Base
     # For config settings, see
     # config/bioportal_config.rb
     # config/initializers/ontologies_api_client.rb
+    # Browser JS cannot resolve internal Docker DNS names (e.g. `api-service`),
+    # so allow a public API endpoint override for front-end calls.
+    public_rest_url = ENV.fetch("PUBLIC_API_URL", LinkedData::Client.settings.rest_url).to_s
+    internal_rest_url = LinkedData::Client.settings.rest_url.to_s
+    publicize = lambda do |url|
+      u = url.to_s
+      return u if u.empty? || internal_rest_url.empty? || public_rest_url.empty?
+      u.start_with?(internal_rest_url) ? u.sub(internal_rest_url, public_rest_url) : u
+    end
     config = {
         org: $ORG,
         org_url: $ORG_URL,
@@ -162,10 +171,10 @@ class ApplicationController < ActionController::Base
         ui_url: $UI_URL,
         apikey: LinkedData::Client.settings.apikey,
         userapikey: get_apikey,
-        rest_url: LinkedData::Client.settings.rest_url,
-        proxy_url: $PROXY_URL,
+        rest_url: public_rest_url,
+        proxy_url: publicize.call($PROXY_URL),
         biomixer_url: $BIOMIXER_URL,
-        annotator_url: $ANNOTATOR_URL,
+        annotator_url: publicize.call($ANNOTATOR_URL),
         ncbo_annotator_url: $NCBO_ANNOTATOR_URL,
         ncbo_apikey: $NCBO_API_KEY,
         interportal_hash: $INTERPORTAL_HASH,
