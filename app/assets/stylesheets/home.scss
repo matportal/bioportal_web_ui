@@ -588,6 +588,19 @@ i.fa.fa-caret-square-o-down {
 .home-support-items a:hover{
   opacity: 100%;
 }
+.home-support-items.matportal-collab-logos > div,
+.home-support-items.matportal-collab-logos > a {
+  margin-right: 18px;
+}
+.home-support-items.matportal-collab-logos a{
+  margin-bottom: 18px;
+}
+.home-support-items.matportal-collab-logos img{
+  height: 48px;
+  max-height: 48px;
+  max-width: 180px;
+  width: auto;
+}
 .home-result-type{
   font-weight: 300;
   margin-bottom: 0;
@@ -714,6 +727,5 @@ i.fa.fa-caret-square-o-down {
       height: unset;
     }
 }
-
 
 

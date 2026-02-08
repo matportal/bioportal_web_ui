@@ -214,7 +214,7 @@
       .text
         = t('home.support_and_collaborations')
       %hr.home-section-line/
-    .home-support-items
+    .home-support-items.matportal-collab-logos
       - $HOME_PAGE_LOGOS&.each do |logo|
         %a{href:logo[:url], target: "_blanc"}
           %img{src: asset_path(logo[:img_src])}

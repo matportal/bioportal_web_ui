@@ -173,43 +173,33 @@ $RESOURCE_TERM = ENV['RESOURCE_TERM'] || 'ontology'
 
 $HOME_PAGE_LOGOS = [
     {
-      img_src: 'logos/supports/numev.webp',
-      url: 'http://www.lirmm.fr/numev',
+      img_src: 'logos/supports/fraunhofer-materials.gif',
+      url: 'https://www.materials.fraunhofer.de/',
       target: '_blank'
     },
     {
-      img_src: 'logos/supports/anr.webp',
-      url: 'https://anr.fr/en',
+      img_src: 'logos/supports/bam.png',
+      url: 'https://www.bam.de/Navigation/DE/Home/home.html',
       target: '_blank'
     },
     {
-      img_src: 'logos/supports/eu.webp',
-      url: 'https://commission.europa.eu/research-and-innovation_en',
+      img_src: 'logos/supports/materialdigital.svg',
+      url: 'https://www.materialdigital.de/',
       target: '_blank'
     },
     {
-      img_src: 'logos/collaboration/d2kab.webp',
-      url: 'http://d2kab.mystrikingly.com',
+      img_src: 'logos/supports/nfdi-matwerk.png',
+      url: 'https://nfdi-matwerk.de/',
       target: '_blank'
     },
     {
-      img_src: 'logos/collaboration/um_logo.webp',
-      url: 'https://www.umontpellier.fr/',
-      target: '_blank',
-    },
-    {
-      img_src: 'logos/collaboration/inrae.webp',
-      url: 'https://www.inrae.fr/enm',
+      img_src: 'logos/supports/oagi.png',
+      url: 'https://oagi.org/pages/industrial-ontologies',
       target: '_blank'
     },
     {
-      img_src: 'logos/collaboration/stanford.webp',
-      url: 'https://www.stanford.edu',
-      target: '_blank'
-    },
-    {
-      img_src: 'logos/collaboration/ontoportal.webp',
-      url: 'https://ontoportal.org/',
+      img_src: 'logos/supports/mat-o-lab.svg',
+      url: 'https://mat-o-lab.github.io/OrgSite/',
       target: '_blank',
     }
 ]
