@@ -269,13 +269,6 @@ $PORTALS_INSTANCES = [
     'light-color': '#F0F5F6'
   },
   {
-    name: 'TestPortal',
-    ui: 'https://testportal.lirmm.fr/',
-    api: 'https://data.testportal.lirmm.fr/',
-    color: '#74a9cb',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-  },
-  {
     name: 'BiodivPortal',
     ui: 'https://biodivportal.gfbio.org/',
     api: 'https://data.biodivportal.gfbio.org/',
