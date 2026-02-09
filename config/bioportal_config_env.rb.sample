@@ -173,7 +173,7 @@ $RESOURCE_TERM = ENV['RESOURCE_TERM'] || 'ontology'
 
 $HOME_PAGE_LOGOS = [
     {
-      img_src: 'logos/supports/fraunhofer-materials.gif',
+      img_src: 'logos/supports/fraunhofer-materials.png',
       url: 'https://www.materials.fraunhofer.de/',
       target: '_blank'
     },
@@ -185,6 +185,11 @@ $HOME_PAGE_LOGOS = [
     {
       img_src: 'logos/supports/materialdigital.svg',
       url: 'https://www.materialdigital.de/',
+      target: '_blank'
+    },
+    {
+      img_src: 'logos/supports/kupferdigital2.png',
+      url: 'https://www.materialdigital.de/project/27',
       target: '_blank'
     },
     {
