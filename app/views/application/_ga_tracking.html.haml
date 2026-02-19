@@ -1,10 +1,21 @@
--# Google tag
-- tag_id = Rails.application.credentials.dig(:google_analytics, :tag_id) || $ANALYTICS_ID
-- if tag_id.present?
-  <script async src="https://www.googletagmanager.com/gtag/js?id=#{tag_id}"></script>
-  %script
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+- matomo_url = ENV.fetch("MATOMO_URL", "").to_s.strip
+- matomo_site_id = ENV.fetch("MATOMO_SITE_ID", "").to_s.strip
+- consent_ok = respond_to?(:analytics_consent?) ? analytics_consent? : true
 
-    gtag('config', '#{tag_id}');
+- if matomo_url.present? && matomo_site_id.present? && consent_ok
+  - matomo_base = matomo_url.chomp("/")
+  %script
+    :plain
+      var _paq = window._paq = window._paq || [];
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u = "#{matomo_base}/";
+        _paq.push(['setTrackerUrl', u + 'matomo.php']);
+        _paq.push(['setSiteId', '#{matomo_site_id}']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src=u + 'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+  %noscript
+    %p
+      %img{src: "#{matomo_base}/matomo.php?idsite=#{matomo_site_id}&rec=1", style: "border:0;", alt: ""}
