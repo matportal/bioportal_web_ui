@@ -166,8 +166,10 @@ class AnnotatorController < ApplicationController
     semantic_types = {}
     sty_ont = LinkedData::Client::Models::Ontology.find_by_acronym('STY').first
     return semantic_types if sty_ont.nil?
+    sty_explore = sty_ont.explore
+    return semantic_types if sty_explore.nil?
     # The first 500 items should be more than sufficient to get all semantic types.
-    sty_classes = sty_ont.explore.classes({'pagesize'=>500, include: 'prefLabel'})
+    sty_classes = sty_explore.classes({'pagesize'=>500, include: 'prefLabel'})
     Array(sty_classes.collection).each do |cls|
       code = cls.id.split("/").last
       semantic_types[ code ] = cls.prefLabel
