@@ -5,11 +5,14 @@ elsif $OMNIAUTH_PROVIDERS.frozen?
   $OMNIAUTH_PROVIDERS = $OMNIAUTH_PROVIDERS.respond_to?(:deep_dup) ? $OMNIAUTH_PROVIDERS.deep_dup : $OMNIAUTH_PROVIDERS.dup
 end
 
+only_keycloak = ENV.fetch('OMNIAUTH_ONLY_KEYCLOAK', 'false').to_s.downcase == 'true'
+
 def merge_omniauth_provider(key, config)
   existing = $OMNIAUTH_PROVIDERS[key] || {}
   $OMNIAUTH_PROVIDERS[key] = existing.merge(config)
 end
 
+unless only_keycloak
 github_client_id = ENV['GITHUB_CLIENT_ID']
 github_client_secret = ENV['GITHUB_CLIENT_SECRET']
 if [github_client_id, github_client_secret].all?(&:present?)
@@ -32,6 +35,7 @@ if [google_client_id, google_client_secret].all?(&:present?)
     enable: ENV.fetch('GOOGLE_ENABLED', 'true').to_s.downcase == 'true'
   })
 end
+end
 
 keycloak_site = ENV['KEYCLOAK_SITE']
 keycloak_realm = ENV['KEYCLOAK_REALM']
@@ -47,4 +51,9 @@ if [keycloak_site, keycloak_realm, keycloak_client_id, keycloak_client_secret].a
     label: ENV['KEYCLOAK_LABEL'] || 'Keycloak',
     enable: ENV.fetch('KEYCLOAK_ENABLED', 'true').to_s.downcase == 'true'
   })
+end
+
+if only_keycloak
+  keycloak_config = $OMNIAUTH_PROVIDERS[:keycloak]
+  $OMNIAUTH_PROVIDERS = keycloak_config ? { keycloak: keycloak_config } : {}
 end
