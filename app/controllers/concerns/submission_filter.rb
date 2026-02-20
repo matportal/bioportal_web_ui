@@ -31,6 +31,13 @@ module SubmissionFilter
 
     @ontologies, @errors = @ontologies.partition { |x| !x.errors }
 
+    if @subdomain_filter&.dig(:active) && @subdomain_filter[:ontologies].present?
+      slice_acronyms = @subdomain_filter[:ontologies]
+        .map { |id| helpers.link_last_part(id).to_s.downcase }
+        .reject(&:empty?)
+      @ontologies = @ontologies.select { |ont| slice_acronyms.include?(ont.acronym.to_s.downcase) }
+    end
+
     # get fair scores of all ontologies
     @fair_scores = fairness_service_enabled? ? get_fair_score('all') : nil
 

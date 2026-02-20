@@ -17,13 +17,13 @@ ENV RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true" \
     RAILS_ENV="production" \
     NODE_ENV="production" \
-    UI_THEME="ontoportal" \
+    UI_THEME="matportal" \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT="development test" \
     SECRET_KEY_BASE_DUMMY=1
 
 # Allow builds to precompile assets for a specific theme (e.g. `matportal`).
-ARG UI_THEME="ontoportal"
+ARG UI_THEME="matportal"
 ENV UI_THEME="${UI_THEME}"
 
 COPY Gemfile* .
