@@ -44,8 +44,8 @@ keycloak_client_secret = ENV['KEYCLOAK_CLIENT_SECRET']
 
 if [keycloak_site, keycloak_realm, keycloak_client_id, keycloak_client_secret].all?(&:present?)
   merge_omniauth_provider(:keycloak, {
-    strategy: :keycloak_open_id,
-    name: 'keycloakopenid',
+    strategy: :keycloak_openid,
+    name: 'keycloak_openid',
     client_id: keycloak_client_id,
     client_secret: keycloak_client_secret,
     client_options: { site: keycloak_site, realm: keycloak_realm },
