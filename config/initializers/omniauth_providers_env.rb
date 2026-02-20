@@ -1,6 +1,8 @@
 # Configure OmniAuth providers from environment variables when not set by config/bioportal_config_*.rb
 if !defined?($OMNIAUTH_PROVIDERS) || $OMNIAUTH_PROVIDERS.nil?
   $OMNIAUTH_PROVIDERS = {}
+elsif $OMNIAUTH_PROVIDERS.frozen?
+  $OMNIAUTH_PROVIDERS = $OMNIAUTH_PROVIDERS.respond_to?(:deep_dup) ? $OMNIAUTH_PROVIDERS.deep_dup : $OMNIAUTH_PROVIDERS.dup
 end
 
 def merge_omniauth_provider(key, config)
