@@ -1,5 +1,6 @@
 # Make sure it matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.1
+ARG UI_THEME=matportal
 FROM ruby:${RUBY_VERSION}-slim-bookworm
 
 WORKDIR /app
@@ -19,7 +20,8 @@ ENV RAILS_LOG_TO_STDOUT="1" \
     NODE_ENV="production" \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT="development test" \
-    SECRET_KEY_BASE_DUMMY=1
+    SECRET_KEY_BASE_DUMMY=1 \
+    UI_THEME="${UI_THEME}"
 
 COPY Gemfile* .
 RUN gem install bundler
@@ -38,7 +40,7 @@ RUN cp config/bioportal_config_env.rb.sample config/bioportal_config_production.
 
 RUN if [ "${RAILS_ENV}" != "development" ]; then \
   bundle exec bootsnap precompile --gemfile app/ lib/ && \
-  SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile; fi
+  SECRET_KEY_BASE_DUMMY=1 UI_THEME="${UI_THEME}" ./bin/rails assets:precompile; fi
 
 EXPOSE 3000
 
