@@ -19,6 +19,16 @@ const resolveCookieDomain = () => {
 
 const cookieDomain = resolveCookieDomain();
 
+const normalizeLang = (value) => {
+  if (!value) return "";
+  return value.toLowerCase().split(/[-_]/)[0];
+};
+
+const getCookieValue = (name) => {
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : "";
+};
+
 const setPortalCookie = (value) => {
   const maxAgeDays = 180;
   const maxAge = maxAgeDays * 24 * 60 * 60;
@@ -81,6 +91,38 @@ const buildTranslations = () => ({
         {
           title: "More information",
           description: `Read our <a href=\"${privacyUrl}\" target=\"_blank\" rel=\"noopener\">privacy policy</a>.`,
+        },
+      ],
+    },
+  },
+  it: {
+    consentModal: {
+      title: "Usiamo i cookie",
+      description: `${portalName} utilizza i cookie per fornire le funzionalità di base e migliorare il servizio. Puoi accettare i cookie di analisi o gestire le tue preferenze.`,
+      acceptAllBtn: "Accetta tutti",
+      acceptNecessaryBtn: "Rifiuta opzionali",
+      showPreferencesBtn: "Gestisci preferenze",
+    },
+    preferencesModal: {
+      title: "Preferenze cookie",
+      acceptAllBtn: "Accetta tutti",
+      acceptNecessaryBtn: "Rifiuta opzionali",
+      savePreferencesBtn: "Salva preferenze",
+      closeIconLabel: "Chiudi",
+      sections: [
+        {
+          title: "Essenziali",
+          description: "Necessari per il funzionamento del sito e non possono essere disattivati.",
+          linkedCategory: "necessary",
+        },
+        {
+          title: "Analisi",
+          description: "Ci aiutano a capire l'utilizzo e a migliorare MatPortal.",
+          linkedCategory: "analytics",
+        },
+        {
+          title: "Ulteriori informazioni",
+          description: `Leggi la nostra <a href=\"${privacyUrl}\" target=\"_blank\" rel=\"noopener\">informativa sulla privacy</a>.`,
         },
       ],
     },
@@ -152,10 +194,21 @@ const buildTranslations = () => ({
 });
 
 const initCookieConsent = () => {
-
-  const lang = (document.documentElement.lang || "en").toLowerCase();
   const translations = buildTranslations();
-  const resolvedLang = translations[lang] ? lang : "en";
+  const htmlLang = normalizeLang(document.documentElement.lang || "en");
+  const cookieLang = normalizeLang(getCookieValue("locale"));
+  const resolvedLang = translations[htmlLang]
+    ? htmlLang
+    : translations[cookieLang]
+      ? cookieLang
+      : "en";
+  if (window.__matportalCookieConsentInitialized) {
+    CookieConsent.setLanguage(resolvedLang);
+    syncAnalyticsConsent();
+    return;
+  }
+
+  window.__matportalCookieConsentInitialized = true;
   const cookieConfig = {
     name: "matportal_cookie_consent",
     path: "/",
