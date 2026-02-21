@@ -5,6 +5,9 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta name="turbo-cache-control" content="no-cache">
 
+    %meta{name: "portal-name", content: portal_name}
+    %meta{name: "privacy-policy-url", content: "#{$FOOTER_LINKS.dig(:sections, :agreements, :privacy_policy)}#{t('cookies_modal.privacy_policy_anchor')}"}
+
     %title= @title.nil? ? "#{$ORG_SITE}" : "#{@title} | #{$ORG_SITE}"
 
     = csrf_meta_tag
@@ -25,7 +28,7 @@
 
   %body{:class => "#{controller_name} #{action_name}"}
     = render partial: "layouts/topnav"
-    = turbo_frame_tag :cookies_modal, src: cookies_path if cookies[:cookies_accepted].nil?
+    
 
     %div.flex-grow-1
       = render partial: "layouts/notices"

@@ -14,6 +14,9 @@
   <meta name="turbo-cache-control" content="no-cache">
   <%= csrf_meta_tag %>
 
+  <meta name="portal-name" content="<%= portal_name %>"/>
+  <meta name="privacy-policy-url" content="<%= $FOOTER_LINKS.dig(:sections, :agreements, :privacy_policy) %><%= t('cookies_modal.privacy_policy_anchor') %>"/>
+
   <title>
     <% if @title.nil? %><%= $ORG_SITE %>
     <% else %><%= "#{@title} | #{$ORG_SITE}" %>
@@ -53,7 +56,7 @@
 </head>
 <body class="<%= controller_name %> <%= action_name %>">
 <%= render partial: 'layouts/topnav' %>
-<%= turbo_frame_tag :cookies_modal, src: cookies_path if cookies[:cookies_accepted].nil? && !(Rails.env.development? || Rails.env.test?) %>
+
 
 <div class="flex-grow-1">
 <%= render partial: 'layouts/notices' %>

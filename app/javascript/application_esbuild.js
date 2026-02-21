@@ -4,6 +4,8 @@
 import { Turbo } from "@hotwired/turbo-rails";
 import "./controllers";
 import "./component_controllers";
+import "./cookie_consent";
+import "./cookie_consent";
 
 Turbo.session.drive = false;
 Turbo.setConfirmMethod((message) => {
@@ -13,5 +15,3 @@ Turbo.setConfirmMethod((message) => {
         })
     })
 })
-
-
