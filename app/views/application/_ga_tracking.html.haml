@@ -1,6 +1,6 @@
 - matomo_url = ENV.fetch("MATOMO_URL", "").to_s.strip
 - matomo_site_id = ENV.fetch("MATOMO_SITE_ID", "").to_s.strip
-- consent_ok = respond_to?(:analytics_consent?) ? analytics_consent? : true
+- consent_ok = cookies[:cookies_accepted].to_s == "true"
 
 - if matomo_url.present? && matomo_site_id.present? && consent_ok
   - matomo_base = matomo_url.chomp("/")

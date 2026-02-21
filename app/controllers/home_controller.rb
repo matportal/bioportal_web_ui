@@ -12,6 +12,11 @@ class HomeController < ApplicationController
 
     @slices = LinkedData::Client::Models::Slice.all
 
+    if @subdomain_filter&.dig(:ontologies).present?
+      slice_acronyms = @subdomain_filter[:ontologies].map { |id| helpers.link_last_part(id).to_s.downcase }
+      @analytics = @analytics.select { |ont, _| slice_acronyms.include?(ont.to_s.downcase) }
+    end
+
     @anal_ont_names = []
     @anal_ont_numbers = []
     unless @analytics.empty?
@@ -27,9 +32,40 @@ class HomeController < ApplicationController
     @analytics = Rails.cache.fetch("ontologies_analytics-#{Time.now.year}-#{Time.now.month}", expires_in: 2.hours) do
       helpers.ontologies_analytics
     end
+    slice_ontologies = @subdomain_filter&.dig(:ontologies)
+    if slice_ontologies.blank?
+      slice_ontologies = slice_ontologies_from_host
+      @subdomain_filter ||= {}
+      @subdomain_filter[:ontologies] = slice_ontologies if slice_ontologies.present?
+    end
+    if slice_ontologies.present?
+      slice_acronyms = slice_ontologies.map { |id| helpers.link_last_part(id).to_s.downcase }
+      @analytics = @analytics.select { |ont, _| slice_acronyms.include?(ont.to_s.downcase) }
+    end
     @metrics = portal_metrics(@analytics)
     respond_to do |format|
       format.html { render partial: 'metrics', layout: false }
+    end
+  end
+
+  private
+
+  def slice_ontologies_from_host
+    subdomain = request.host.to_s.split('.').first&.downcase
+    return [] if subdomain.blank?
+
+    begin
+      slice = LinkedData::Client::HTTP.get("/slices/#{subdomain}")
+    rescue StandardError
+      return []
+    end
+
+    if slice.respond_to?(:ontologies)
+      slice.ontologies
+    elsif slice.respond_to?(:to_hash)
+      slice.to_hash["ontologies"] || []
+    else
+      slice["ontologies"] || []
     end
   end
 
@@ -60,8 +96,18 @@ class HomeController < ApplicationController
   end
 
   def set_cookies
-    cookies.permanent[:cookies_accepted] = params[:cookies] if params[:cookies]
-    render 'cookies', layout: nil
+    if params[:cookies]
+      cookie_options = {
+        domain: cookie_domain,
+        same_site: :lax,
+        secure: request.ssl?
+      }.compact
+      cookies.permanent[:cookies_accepted] = {
+        value: params[:cookies],
+        **cookie_options
+      }
+    end
+    head :ok
   end
 
   def portal_config
@@ -74,6 +120,14 @@ class HomeController < ApplicationController
       @portal_config = {}
     end
   end
+
+  def cookie_domain
+    host = request.host.to_s
+    return ".stage.matportal.org" if host.end_with?(".stage.matportal.org")
+    return ".matportal.org" if host.end_with?(".matportal.org")
+    nil
+  end
+  private :cookie_domain
 
   def tools
     @tools = {
