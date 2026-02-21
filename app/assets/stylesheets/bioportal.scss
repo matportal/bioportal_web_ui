@@ -1048,3 +1048,48 @@ turbo-frame[busy] ~ .show-if-loading {
 .cookies-modal {
   display: none;
 }
+
+#cc-main {
+  --cc-font-family: "Droid Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --cc-modal-border-radius: 8px;
+  --cc-btn-border-radius: 6px;
+  --cc-bg: #ffffff;
+  --cc-primary-color: #1f2d2a;
+  --cc-secondary-color: #4f5d58;
+  --cc-link-color: var(--primary-color);
+  --cc-btn-primary-bg: var(--primary-color);
+  --cc-btn-primary-color: #ffffff;
+  --cc-btn-primary-border-color: var(--primary-color);
+  --cc-btn-primary-hover-bg: var(--hover-color);
+  --cc-btn-primary-hover-color: #ffffff;
+  --cc-btn-primary-hover-border-color: var(--hover-color);
+  --cc-btn-secondary-bg: var(--light-color);
+  --cc-btn-secondary-color: var(--primary-color);
+  --cc-btn-secondary-border-color: var(--light-color);
+  --cc-btn-secondary-hover-bg: #d9eee7;
+  --cc-btn-secondary-hover-color: var(--primary-color);
+  --cc-btn-secondary-hover-border-color: #d9eee7;
+  --cc-separator-border-color: rgba(0, 0, 0, 0.06);
+  --cc-toggle-on-bg: var(--primary-color);
+  --cc-toggle-off-bg: #9fb5af;
+  --cc-toggle-readonly-bg: #dfe9e6;
+  --cc-cookie-category-block-bg: var(--light-color);
+  --cc-cookie-category-block-border: var(--light-color);
+  --cc-cookie-category-block-hover-bg: #d9eee7;
+  --cc-cookie-category-block-hover-border: #d9eee7;
+  --cc-footer-bg: var(--light-color);
+  --cc-footer-color: var(--primary-color);
+  --cc-footer-border-color: rgba(0, 0, 0, 0.05);
+}
+
+#cc-main .cm,
+#cc-main .pm {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+#cc-main .cm__title,
+#cc-main .pm__title {
+  color: var(--primary-color);
+  font-weight: 600;
+}
