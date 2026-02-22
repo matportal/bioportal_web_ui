@@ -11,10 +11,22 @@ module SparqlHelper
       rest_url = $REST_URL.to_s
       rest_url = LinkedData::Client.settings.rest_url.to_s if rest_url.empty?
       public_api = ENV['PUBLIC_API_URL'].to_s
-      base_urls = [rest_url, public_api, 'https://data.stage.matportal.org', 'http://data.stage.matportal.org', 'https://data.bioontology.org', 'http://data.bioontology.org']
-      base_urls.each do |base|
-        next if base.to_s.strip.empty?
-        graph = graph.gsub(base.to_s, 'http://data.bioontology.org')
+
+      graph_uri = URI.parse(graph) rescue nil
+      if graph_uri&.host
+        allowed_hosts = []
+        [rest_url, public_api].each do |base|
+          next if base.to_s.strip.empty?
+          base_uri = URI.parse(base) rescue nil
+          allowed_hosts << base_uri.host if base_uri&.host
+        end
+        allowed_hosts.concat(%w[data.stage.matportal.org data.bioontology.org])
+        if allowed_hosts.uniq.include?(graph_uri.host)
+          graph_uri.scheme = 'http'
+          graph_uri.host = 'data.bioontology.org'
+          graph_uri.port = nil
+          graph = graph_uri.to_s
+        end
       end
 
       if query.match?(/(?<=\s|^)FROM\s*\S+[^{ \n]/i)
