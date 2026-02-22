@@ -37,7 +37,7 @@ class GroupsIoClient
     return { ok: true, status: :invited, payload: payload } if payload["invited"].present?
     { ok: true, status: :invited, payload: payload }
   rescue => e
-    failure(e.class.name)
+    failure("#{e.class.name}: #{e.message}")
   end
 
   private
@@ -45,8 +45,8 @@ class GroupsIoClient
   def connection
     @connection ||= Faraday.new(url: API_BASE) do |conn|
       conn.request :url_encoded
+      conn.request :authorization, :basic, @api_key, ""
       conn.adapter Faraday.default_adapter
-      conn.basic_auth(@api_key, "")
     end
   end
 
