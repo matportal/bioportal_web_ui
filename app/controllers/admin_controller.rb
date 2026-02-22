@@ -3,22 +3,32 @@ class AdminController < ApplicationController
   layout :determine_layout
   before_action :authorize_admin
   before_action :cache_setup
+  skip_before_action :authorize_admin, only: [:sparql_endpoint]
 
     USERS_URL = "#{LinkedData::Client.settings.rest_url}/users"
   ONTOLOGY_URL = lambda { |acronym| "#{ADMIN_URL}ontologies/#{acronym}" }
   PARSE_LOG_URL = lambda { |acronym| "#{ONTOLOGY_URL.call(acronym)}/log" }
 
   def sparql_endpoint
-    graph = params["named-graph-uri"]
+    graph = params["named-graph-uri"] || params["default-graph-uri"] || params["graph"]
     apikey = params["apikey"]
     user_name = params["username"]
+    user = nil
 
     unless user_name.blank?
-      user = LinkedData::Client::Models::User.find(user_name, {include: 'all', apikey: apikey})
+      user = LinkedData::Client::Models::User.find(user_name, { include: 'all', apikey: apikey })
       render(inline: 'Query not permitted') && return if user.nil?
     end
 
-    render(inline: 'Query not permitted') && return if graph.blank? && !user&.admin?
+    is_admin = user&.admin? || current_user_admin?
+
+    render(inline: 'Query not permitted') && return if graph.blank? && !is_admin
+
+    # Only allow ontology submission graphs for non-admin users to prevent
+    # access to other graphs (e.g., users) stored in 4store.
+    unless is_admin || allowed_ontology_graph?(graph)
+      render(inline: t('admin.query_not_permitted')) && return
+    end
 
     unless graph.blank?
       acronym = graph.split('/')[-3]
@@ -29,6 +39,25 @@ class AdminController < ApplicationController
     response = helpers.ontology_sparql_query(params[:query], graph)
 
     render inline:  response
+  end
+
+  private
+
+  def allowed_ontology_graph?(graph)
+    return false if graph.blank?
+
+    rest_url = $REST_URL.to_s.sub(%r{/\z}, '')
+    prefixes = [rest_url]
+    prefixes << rest_url.sub('https://', 'http://') if rest_url.start_with?('https://')
+    prefixes << 'http://data.bioontology.org'
+    prefixes << 'https://data.bioontology.org'
+
+    graph_regexes = prefixes.uniq.filter_map do |prefix|
+      next if prefix.empty?
+      %r{\A#{Regexp.escape(prefix)}/ontologies/[^/]+/submissions/\d+/?\z}
+    end
+
+    graph_regexes.any? { |regex| graph.match?(regex) }
   end
 
   def index
