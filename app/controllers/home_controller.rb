@@ -48,8 +48,6 @@ class HomeController < ApplicationController
     end
   end
 
-  private
-
   def slice_ontologies_from_host
     subdomain = request.host.to_s.split('.').first&.downcase
     return [] if subdomain.blank?
@@ -68,6 +66,8 @@ class HomeController < ApplicationController
       slice["ontologies"] || []
     end
   end
+
+  public
 
   # Add a new action for the agents section
   def agents
