@@ -1,5 +1,6 @@
 class GroupsIoClient
-  API_BASE = "https://api.groups.io"
+  API_BASE = "https://groups.io/api"
+  INVITE_PATH = "/v1/directadd"
 
   def initialize(api_key:)
     @api_key = api_key.to_s.strip
@@ -11,7 +12,7 @@ class GroupsIoClient
     email_list = Array(emails).map(&:to_s).reject(&:empty?).join("\n")
     return failure("missing_emails") if email_list.empty?
 
-    response = connection.post("/v1/invite") do |req|
+    response = connection.post(INVITE_PATH) do |req|
       req.body = {
         group_name: group_name.to_s.strip,
         emails: email_list
@@ -20,7 +21,7 @@ class GroupsIoClient
       req.body[:message] = message if message.present?
     end
 
-    return failure("http_#{response.status}") unless response.success?
+    return failure("http_#{response.status}: #{response.body.to_s[0,200]}") unless response.success?
 
     payload = parse_json(response.body)
     return failure("invalid_response") if payload.nil?
