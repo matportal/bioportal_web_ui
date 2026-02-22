@@ -46,22 +46,10 @@ class AdminController < ApplicationController
   def allowed_ontology_graph?(graph)
     return false if graph.blank?
 
-    rest_url = $REST_URL.to_s
-    if rest_url.empty?
-      rest_url = LinkedData::Client.settings.rest_url.to_s
-    end
-    rest_url = rest_url.sub(%r{/\z}, '')
-    prefixes = [rest_url]
-    prefixes << rest_url.sub('https://', 'http://') if rest_url.start_with?('https://')
-    prefixes << 'http://data.bioontology.org'
-    prefixes << 'https://data.bioontology.org'
+    uri = URI.parse(graph) rescue nil
+    return false unless uri&.host && %w[http https].include?(uri.scheme)
 
-    graph_regexes = prefixes.uniq.filter_map do |prefix|
-      next if prefix.empty?
-      %r{\A#{Regexp.escape(prefix)}/ontologies/[^/]+/submissions/\d+/?\z}
-    end
-
-    graph_regexes.any? { |regex| graph.match?(regex) }
+    uri.path.match?(%r{\A/ontologies/[^/]+/submissions/\d+/?\z})
   end
 
   def index
