@@ -1,0 +1,25 @@
+:root {
+  --cc-bg: var(--primary-color);
+  --cc-primary-color: #ffffff;
+  --cc-secondary-color: #ffffff;
+  --cc-btn-primary-bg: #ffffff;
+  --cc-btn-primary-color: var(--primary-color);
+  --cc-btn-primary-hover-bg: var(--light-color);
+  --cc-btn-primary-hover-color: var(--primary-color);
+  --cc-btn-secondary-bg: transparent;
+  --cc-btn-secondary-color: #ffffff;
+  --cc-btn-secondary-hover-bg: rgba(255, 255, 255, 0.15);
+  --cc-btn-secondary-hover-color: #ffffff;
+  --cc-link-color: #ffffff;
+  --cc-link-hover-color: #ffffff;
+  --cc-cookie-category-block-bg: rgba(255, 255, 255, 0.08);
+  --cc-cookie-category-block-border: rgba(255, 255, 255, 0.2);
+  --cc-separator-border-color: rgba(255, 255, 255, 0.25);
+  --cc-toggle-bg-off: rgba(255, 255, 255, 0.35);
+  --cc-toggle-bg-on: #ffffff;
+  --cc-toggle-btn-bg: var(--primary-color);
+}
+
+#cc-main .cc-btn {
+  border-width: 1px;
+}
