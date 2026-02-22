@@ -46,7 +46,11 @@ class AdminController < ApplicationController
   def allowed_ontology_graph?(graph)
     return false if graph.blank?
 
-    rest_url = $REST_URL.to_s.sub(%r{/\z}, '')
+    rest_url = $REST_URL.to_s
+    if rest_url.empty?
+      rest_url = LinkedData::Client.settings.rest_url.to_s
+    end
+    rest_url = rest_url.sub(%r{/\z}, '')
     prefixes = [rest_url]
     prefixes << rest_url.sub('https://', 'http://') if rest_url.start_with?('https://')
     prefixes << 'http://data.bioontology.org'
