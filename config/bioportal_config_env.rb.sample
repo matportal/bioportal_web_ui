@@ -120,9 +120,18 @@ ActionMailer::Base.smtp_settings = {
   port: 25, # smtp server port
   domain: '' # fqdn of rails server, ex: rails.example.org
 }
-# Announcements mailman mailing list REQUEST address, EX: list-request@lists.example.org
-# NOTE: You must use the REQUEST address for the mailing list. ONLY WORKS WITH MAILMAN LISTS.
-$ANNOUNCE_LIST = ENV['SUPPORT_EMAIL']
+# Mailing list subscription settings
+# GROUPS_IO example:
+#   ANNOUNCE_LIST_SERVICE=GROUPS_IO
+#   ANNOUNCE_LIST=matportal
+#   ANNOUNCE_SERVICE_HOST=groups.io
+# SYMPA example:
+#   ANNOUNCE_LIST_SERVICE=SYMPA
+#   ANNOUNCE_LIST=mylist
+#   ANNOUNCE_SERVICE_HOST=list-request@lists.example.org
+$ANNOUNCE_LIST_SERVICE = ENV['ANNOUNCE_LIST_SERVICE']
+$ANNOUNCE_LIST = ENV['ANNOUNCE_LIST']
+$ANNOUNCE_SERVICE_HOST = ENV['ANNOUNCE_SERVICE_HOST']
 # Email addresses used for sending notifications (errors, feedback, support)
 $SUPPORT_EMAIL = ENV['SUPPORT_EMAIL']
 # Email used to send notifications

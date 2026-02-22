@@ -75,7 +75,8 @@ class UsersController < ApplicationController
       else
         # Attempt to register user to list
         if params[:user][:register_mail_list]
-          SubscribeMailer.register_for_announce_list(@user.email,@user.firstName,@user.lastName).deliver rescue nil
+          SubscribeMailer.register_for_announce_list(@user.email,@user.firstName,@user.lastName)&.deliver rescue nil
+          SubscribeMailer.notify_announce_list_subscription(@user.email)&.deliver rescue nil
         end
 
         flash[:notice] = t('users.account_successfully_created')

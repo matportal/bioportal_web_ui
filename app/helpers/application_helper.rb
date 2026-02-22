@@ -298,6 +298,54 @@ module ApplicationHelper
     request.path.eql?(path)
   end
 
+  def announce_list_service
+    ENV['ANNOUNCE_LIST_SERVICE'].presence || (defined?($ANNOUNCE_LIST_SERVICE) ? $ANNOUNCE_LIST_SERVICE : nil)
+  end
+
+  def announce_list_name
+    ENV['ANNOUNCE_LIST'].presence || (defined?($ANNOUNCE_LIST) ? $ANNOUNCE_LIST : nil)
+  end
+
+  def announce_list_host
+    ENV['ANNOUNCE_SERVICE_HOST'].presence || (defined?($ANNOUNCE_SERVICE_HOST) ? $ANNOUNCE_SERVICE_HOST : nil)
+  end
+
+  def announce_list_subscribe_address
+    service = announce_list_service.to_s.upcase
+    list = announce_list_name.to_s.strip
+    host = announce_list_host.to_s.strip
+    return nil if list.empty? || host.empty?
+    return "#{list}+subscribe@#{host}" if service == 'GROUPS_IO'
+    host
+  end
+
+  def announce_list_unsubscribe_address
+    service = announce_list_service.to_s.upcase
+    list = announce_list_name.to_s.strip
+    host = announce_list_host.to_s.strip
+    return nil if list.empty? || host.empty?
+    return "#{list}+unsubscribe@#{host}" if service == 'GROUPS_IO'
+    host
+  end
+
+  def announce_list_subscribe_subject(first_name, last_name)
+    service = announce_list_service.to_s.upcase
+    list = announce_list_name.to_s.strip
+    return nil if list.empty?
+    return "subscribe #{list} #{first_name} #{last_name}".strip if service == 'SYMPA'
+    return "subscribe #{list}".strip if service == 'GROUPS_IO'
+    nil
+  end
+
+  def announce_list_unsubscribe_subject
+    service = announce_list_service.to_s.upcase
+    list = announce_list_name.to_s.strip
+    return nil if list.empty?
+    return "unsubscribe #{list}".strip if service == 'SYMPA'
+    return "unsubscribe #{list}".strip if service == 'GROUPS_IO'
+    nil
+  end
+
   def bp_config_json
     # For config settings, see
     # config/bioportal_config.rb
