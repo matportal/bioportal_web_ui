@@ -19,13 +19,14 @@ class SubscribeMailer < ApplicationMailer
       end
     end
 
-    def notify_announce_list_subscription(email)
+    def notify_announce_list_subscription(email, status = nil)
       return unless support_email_present?
 
+      status_text = status ? " (status: #{status})" : ""
       mail(
         :to => $SUPPORT_EMAIL,
         :from => email,
-        :subject => "#{email} has been subscribe to our user mailing list #{$ANNOUNCE_LIST}")
+        :subject => "#{email} has been subscribe to our user mailing list #{$ANNOUNCE_LIST}#{status_text}")
     end
 
     def unregister_for_announce_list(email)

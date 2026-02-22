@@ -26,11 +26,16 @@ class GroupsIoClient
     return failure("invalid_response") if payload.nil?
 
     if payload["object"] == "error"
-      return { ok: payload["type"] == "pending_invites", error: payload["type"], payload: payload }
+      if payload["type"] == "pending_invites"
+        return { ok: true, status: :pending, error: payload["type"], payload: payload }
+      end
+      return { ok: false, status: :failed, error: payload["type"], payload: payload }
     end
 
     errors = Array(payload["errors"])
-    return { ok: errors.empty? || payload["invited"].present?, error: errors, payload: payload }
+    return { ok: false, status: :failed, error: errors, payload: payload } if errors.any?
+    return { ok: true, status: :invited, payload: payload } if payload["invited"].present?
+    { ok: true, status: :invited, payload: payload }
   rescue => e
     failure(e.class.name)
   end
@@ -52,6 +57,6 @@ class GroupsIoClient
   end
 
   def failure(error)
-    { ok: false, error: error }
+    { ok: false, status: :failed, error: error }
   end
 end

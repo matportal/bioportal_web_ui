@@ -346,6 +346,13 @@ module ApplicationHelper
     nil
   end
 
+  def announce_list_pending_invites_url
+    service = announce_list_service.to_s.upcase
+    list = announce_list_name.to_s.strip
+    return nil unless service == 'GROUPS_IO' && list.present?
+    ENV['ANNOUNCE_GROUPS_IO_PENDING_URL'].presence || "https://groups.io/g/#{list}/members"
+  end
+
   def bp_config_json
     # For config settings, see
     # config/bioportal_config.rb

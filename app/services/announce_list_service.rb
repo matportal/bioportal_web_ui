@@ -3,21 +3,21 @@ class AnnounceListService
     return false if email.to_s.strip.empty?
 
     service = announce_list_service
-    success = case service
-              when "GROUPS_IO"
-                subscribe_groups_io(email, first_name, last_name)
-              when "SYMPA"
-                SubscribeMailer.register_for_announce_list(email, first_name, last_name)&.deliver
-                true
-              else
-                false
-              end
+    result = case service
+             when "GROUPS_IO"
+               subscribe_groups_io(email, first_name, last_name)
+             when "SYMPA"
+               SubscribeMailer.register_for_announce_list(email, first_name, last_name)&.deliver
+               { ok: true, status: :invited }
+             else
+               { ok: false, status: :skipped }
+             end
 
-    if success
-      SubscribeMailer.notify_announce_list_subscription(email)&.deliver
+    if result[:ok]
+      SubscribeMailer.notify_announce_list_subscription(email, result[:status])&.deliver
     end
 
-    success
+    result[:status]
   end
 
   private
@@ -25,7 +25,7 @@ class AnnounceListService
   def self.subscribe_groups_io(email, first_name, last_name)
     api_key = groups_io_api_key
     list_name = announce_list_name
-    return false if api_key.empty? || list_name.empty?
+    return { ok: false, status: :skipped } if api_key.empty? || list_name.empty?
 
     display_name = [first_name, last_name].compact.join(" ").strip
     invitee = display_name.empty? ? email : "#{display_name} <#{email}>"
@@ -36,10 +36,10 @@ class AnnounceListService
     )
 
     if result[:ok]
-      true
+      result
     else
       Rails.logger.warn("Groups.io invite failed: #{result[:error]}")
-      false
+      result
     end
   end
 

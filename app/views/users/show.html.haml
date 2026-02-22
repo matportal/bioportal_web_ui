@@ -43,6 +43,7 @@
             - unsubscribe_address = announce_list_unsubscribe_address
             - subscribe_subject = announce_list_subscribe_subject(@user.firstName, @user.lastName)
             - unsubscribe_subject = announce_list_unsubscribe_subject
+            - pending_invites_url = announce_list_pending_invites_url
             - if subscribed
               - if unsubscribe_address.present?
                 - unsubscribe_url = "mailto:#{unsubscribe_address}"
@@ -55,6 +56,9 @@
                 - subscribe_url += "?subject=#{CGI.escape(subscribe_subject)}" if subscribe_subject.present?
                 %a.account-page-subscribe-button{href: subscribe_url}
                   = t('users.show.subscribe')
+            - if current_user_admin? && pending_invites_url.present?
+              %a.account-page-subscribe-button{href: pending_invites_url, target: "_blank", rel: "noopener"}
+                = t('users.show.pending_invites', default: 'Pending invites')
         .account-page-card
           .account-page-card-container
             .account-page-card-sub-container
