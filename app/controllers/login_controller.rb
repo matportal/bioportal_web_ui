@@ -3,6 +3,16 @@ class LoginController < ApplicationController
   layout :determine_layout
 
   def index
+    canonical_base = canonical_login_base
+    if canonical_base
+      canonical_host = URI.parse(canonical_base).host rescue nil
+      if canonical_host && request.host != canonical_host
+        redirect_target = params[:redirect].presence || request.referer
+        redirect_param = redirect_target.present? ? "?redirect=#{CGI.escape(redirect_target)}" : ""
+        return redirect_to("#{canonical_base}/login#{redirect_param}", allow_other_host: true)
+      end
+    end
+
     # Sets the redirect properties
     if params[:redirect]
       # Get the original, encoded redirect
@@ -61,7 +71,7 @@ class LoginController < ApplicationController
         redirect = CGI.unescape(session[:redirect])
       end
 
-      redirect_to redirect
+      redirect_to redirect, allow_other_host: true
     else
       @errors =  [t('login.authentication_failed', provider: params[:provider])]
       render :action => 'index'
@@ -164,6 +174,14 @@ class LoginController < ApplicationController
 
   def is_email(email)
     email =~ /\A[^@\s]+@[^@\s]+\z/
+  end
+
+  def canonical_login_base
+    full_host = ENV['OMNIAUTH_FULL_HOST'].to_s.strip
+    return nil if full_host.empty?
+    uri = URI.parse(full_host) rescue nil
+    return nil unless uri&.scheme && uri&.host
+    "#{uri.scheme}://#{uri.host}"
   end
 
 
