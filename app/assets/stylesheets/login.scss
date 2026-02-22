@@ -61,3 +61,29 @@
 .login-active-sso path{
     fill: var(--primary-color)
 }
+
+.login-sso-button{
+    border: 1px solid var(--primary-color) !important;
+    background: transparent !important;
+    color: var(--primary-color) !important;
+    border-radius: 8px;
+    padding: 10px 16px;
+    min-width: 220px;
+    height: 44px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-sso-button:hover,
+.login-sso-button:focus{
+    background: var(--primary-color) !important;
+    color: #fff !important;
+}
+
+.login-sso-button:hover .login-active-sso path,
+.login-sso-button:focus .login-active-sso path{
+    fill: #fff;
+}

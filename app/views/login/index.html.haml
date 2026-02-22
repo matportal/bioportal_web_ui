@@ -22,14 +22,19 @@
     %hr.divider.w-100.mb-4.mt-4
     %div.d-flex.justify-content-around.flew-wrap
       - omniauth_providers_info.each do |provider, config|
+        - provider_label = config[:label].presence || provider.to_s.humanize
+        - button_text = t('login.login_with_provider', provider: provider_label)
+        - button_style = config[:label].present? ? '' : 'width: 70px'
         - if config[:enable]
           = button_to  "/auth/#{config[:name] || config[:strategy] || provider}",
-                      class: 'btn btn-lg',disabled: !config[:enable] ,style:'width: 70px', title: t('login.login_with_provider', provider: provider.to_s.humanize), 'data-turbo': false do; 
-            - if config[:icon]
+                      class: 'btn btn-lg login-sso-button',disabled: !config[:enable] ,style: button_style, title: button_text, 'data-turbo': false do;
+            - if config[:label].present?
+              = button_text
+            - elsif config[:icon]
               = inline_svg "icons/#{config[:icon]}", class: 'login-active-sso'
             - else
-              = provider.to_s.humanize
+              = provider_label
         - else
           .disabled-login-sso
-            = render Display::InfoTooltipComponent.new(text: "#{provider.to_s.humanize} is disabled") do
+            = render Display::InfoTooltipComponent.new(text: "#{provider_label} is disabled") do
               = inline_svg "icons/#{config[:icon]}", width: "40", height: "40"
