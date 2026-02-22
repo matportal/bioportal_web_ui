@@ -7,7 +7,15 @@ module SparqlHelper
     query.gsub!(/\n\s*\n+/, "\n")
 
     unless graph.blank?
-      graph = graph.gsub($REST_URL, 'http://data.bioontology.org')
+      graph = graph.to_s
+      rest_url = $REST_URL.to_s
+      rest_url = LinkedData::Client.settings.rest_url.to_s if rest_url.empty?
+      public_api = ENV['PUBLIC_API_URL'].to_s
+      base_urls = [rest_url, public_api, 'https://data.stage.matportal.org', 'http://data.stage.matportal.org', 'https://data.bioontology.org', 'http://data.bioontology.org']
+      base_urls.each do |base|
+        next if base.to_s.strip.empty?
+        graph = graph.gsub(base.to_s, 'http://data.bioontology.org')
+      end
 
       if query.match?(/(?<=\s|^)FROM\s*\S+[^{ \n]/i)
         #  match FROM <URI> and FROM meta:User (only after space or start of line)
