@@ -46,6 +46,16 @@ class LoginController < ApplicationController
 
     logged_in_user = LinkedData::Client::Models::User.authenticate(username, params[:user][:password])
     if logged_in_user && !logged_in_user.errors
+      begin
+        if keycloak_migration_on_login?
+          result = keycloak_migration_for(logged_in_user)
+          if result == :email_sent
+            flash[:notice] = "We emailed you a link to set your Keycloak password. Please use “Login with OAuth” next time."
+          end
+        end
+      rescue StandardError => e
+        LOG.add :error, "Keycloak migration failed for #{logged_in_user.username}: #{e.class} #{e.message}"
+      end
       login(logged_in_user)
       raw_redirect = params[:redirect] || session[:redirect]
       redirect = raw_redirect ? CGI.unescape(raw_redirect) : "/"
@@ -174,6 +184,16 @@ class LoginController < ApplicationController
 
   def is_email(email)
     email =~ /\A[^@\s]+@[^@\s]+\z/
+  end
+
+  def keycloak_migration_on_login?
+    ENV.fetch('KEYCLOAK_MIGRATION_ON_LOGIN', 'false').to_s.downcase == 'true'
+  end
+
+  def keycloak_migration_for(user)
+    client = KeycloakAdminClient.new
+    return :skipped unless client.enabled?
+    client.ensure_password_reset_email(user.username, user.email)
   end
 
   def canonical_login_base
