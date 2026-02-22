@@ -1,6 +1,6 @@
 class GroupsIoClient
   API_BASE = "https://groups.io/api"
-  INVITE_PATH = "/v1/directadd"
+  INVITE_PATH = "/v1/invite"
 
   def initialize(api_key:)
     @api_key = api_key.to_s.strip
@@ -13,6 +13,7 @@ class GroupsIoClient
     return failure("missing_emails") if email_list.empty?
 
     response = connection.post(INVITE_PATH) do |req|
+      req.headers["Authorization"] = "Bearer #{@api_key}"
       req.body = {
         group_name: group_name.to_s.strip,
         emails: email_list
@@ -46,7 +47,6 @@ class GroupsIoClient
   def connection
     @connection ||= Faraday.new(url: API_BASE) do |conn|
       conn.request :url_encoded
-      conn.request :authorization, :basic, @api_key, ""
       conn.adapter Faraday.default_adapter
     end
   end
