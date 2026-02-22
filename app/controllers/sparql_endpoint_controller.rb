@@ -11,7 +11,12 @@ class SparqlEndpointController < ApplicationController
       @sample_queries = helpers.get_catalog_sample_queries
     else
       @sample_queries = helpers.get_ontology_sample_queries(params[:graph])
-      @graph = params[:graph].gsub($REST_URL, 'http://data.bioontology.org')
+      public_rest_url = ENV.fetch("PUBLIC_API_URL", LinkedData::Client.settings.rest_url).to_s
+      rest_url = $REST_URL.to_s
+      @graph = params[:graph].to_s
+      if !rest_url.empty? && !public_rest_url.empty?
+        @graph = @graph.gsub(rest_url, public_rest_url)
+      end
     end
     render partial: 'sample_queries_edit_modal',layout: false
   end

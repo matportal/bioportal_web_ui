@@ -11,20 +11,22 @@ module SparqlHelper
       rest_url = $REST_URL.to_s
       rest_url = LinkedData::Client.settings.rest_url.to_s if rest_url.empty?
       public_api = ENV['PUBLIC_API_URL'].to_s
+      preferred_base = public_api.strip.empty? ? rest_url : public_api
+      base_uri = URI.parse(preferred_base) rescue nil
 
       graph_uri = URI.parse(graph) rescue nil
       if graph_uri&.host
         allowed_hosts = []
         [rest_url, public_api].each do |base|
           next if base.to_s.strip.empty?
-          base_uri = URI.parse(base) rescue nil
-          allowed_hosts << base_uri.host if base_uri&.host
+          base_uri_candidate = URI.parse(base) rescue nil
+          allowed_hosts << base_uri_candidate.host if base_uri_candidate&.host
         end
-        allowed_hosts.concat(%w[data.stage.matportal.org data.bioontology.org])
-        if allowed_hosts.uniq.include?(graph_uri.host)
-          graph_uri.scheme = 'http'
-          graph_uri.host = 'data.bioontology.org'
-          graph_uri.port = nil
+        allowed_hosts.concat(%w[data.stage.matportal.org data.matportal.org data.bioontology.org])
+        if allowed_hosts.uniq.include?(graph_uri.host) && base_uri&.host
+          graph_uri.scheme = base_uri.scheme || 'https'
+          graph_uri.host = base_uri.host
+          graph_uri.port = (base_uri.port && ![80, 443].include?(base_uri.port)) ? base_uri.port : nil
           graph = graph_uri.to_s
         end
       end
