@@ -125,6 +125,7 @@ ActionMailer::Base.smtp_settings = {
 #   ANNOUNCE_LIST_SERVICE=GROUPS_IO
 #   ANNOUNCE_LIST=matportal
 #   ANNOUNCE_SERVICE_HOST=groups.io
+#   ANNOUNCE_GROUPS_IO_API_KEY=your_api_key
 # SYMPA example:
 #   ANNOUNCE_LIST_SERVICE=SYMPA
 #   ANNOUNCE_LIST=mylist
