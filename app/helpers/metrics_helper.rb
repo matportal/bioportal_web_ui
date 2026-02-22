@@ -1,7 +1,9 @@
 module MetricsHelper
 
   def portal_metrics(analytics)
-    ontologies_acronym = if analytics.empty?
+    ontologies_acronym = if @subdomain_filter&.dig(:ontologies).present?
+                           @subdomain_filter[:ontologies].map { |id| helpers.link_last_part(id) }.compact
+                         elsif analytics.empty?
                            LinkedData::Client::Models::Ontology.all.map { |x| x.acronym }
                          else
                            analytics.keys
@@ -62,7 +64,7 @@ module MetricsHelper
       unless stats.blank?
         stats = stats.to_h.compact
         # Some of the mapping counts are erroneously stored as strings
-        stats.select!{ |acronym, count| ontologies_acronym.include?(acronym.to_s) } if helpers.at_slice?
+        stats.select!{ |acronym, count| ontologies_acronym.include?(acronym.to_s) } if ontologies_acronym.present?
         stats.transform_values!(&:to_i)
         total_count = stats.values.sum
       end

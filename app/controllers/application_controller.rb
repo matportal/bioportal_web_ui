@@ -127,6 +127,22 @@ class ApplicationController < ActionController::Base
         @subdomain_filter[:name] = slice.name
         @subdomain_filter[:acronym] = slice.acronym
         @subdomain_filter[:ontologies] = slice.ontologies
+
+        if @subdomain_filter[:ontologies].blank?
+          begin
+            slice_detail = LinkedData::Client::HTTP.get("/slices/#{subdomain}")
+            detail_onts = if slice_detail.respond_to?(:ontologies)
+                            slice_detail.ontologies
+                          elsif slice_detail.respond_to?(:to_hash)
+                            slice_detail.to_hash["ontologies"]
+                          else
+                            slice_detail["ontologies"]
+                          end
+            @subdomain_filter[:ontologies] = detail_onts if detail_onts.present?
+          rescue StandardError => e
+            LOG.add :error, "Slice #{subdomain} ontologies lookup failed: #{e.message}"
+          end
+        end
       end
     end
 
