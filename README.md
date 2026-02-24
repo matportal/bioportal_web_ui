@@ -48,3 +48,21 @@ bin/ontoportal test # Running all tests
 ./bin/ontoportal test test/system/submission_flows_test.rb:75 # Running speicif test which line 75 is inside
 ```
 
+### Mobi Sync
+- Enable submission sync with `MOBI_SYNC_ENABLED=true`.
+- Configure target API with `MOBI_BASE_URL` (for example `https://mobi.dev.matportal.org`).
+- Authentication options:
+  - `MOBI_SYNC_BEARER_TOKEN` for a static token.
+  - or `MOBI_SYNC_CLIENT_ID` + `MOBI_SYNC_CLIENT_SECRET` (+ optional `MOBI_SYNC_TOKEN_URL`) for automatic Keycloak token retrieval.
+- Optional identity headers:
+  - `MOBI_SYNC_USERNAME`
+  - `MOBI_SYNC_EMAIL`
+- Optional request controls:
+  - `MOBI_SYNC_TIMEOUT_SECONDS` (default `120`)
+  - `MOBI_SYNC_SSL_VERIFY` (`true` by default)
+
+Manual execution:
+```bash
+bundle exec rake mobi:sync_submission[ACRONYM,SUBMISSION_ID]
+bundle exec rake mobi:sync_all
+```
