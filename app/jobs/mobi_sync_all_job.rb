@@ -2,6 +2,6 @@ class MobiSyncAllJob < ApplicationJob
   queue_as :default
 
   def perform
-    Mobi::OntologySyncService.call(full_sync: true)
+    Mobi::OntologySyncService.new(full_sync: true).call
   end
 end

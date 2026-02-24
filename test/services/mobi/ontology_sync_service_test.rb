@@ -31,7 +31,7 @@ class MobiOntologySyncServiceTest < ActiveSupport::TestCase
           commitId: "http://mobi.example.org/commits/1"
         }.to_json)
 
-      result = Mobi::OntologySyncService.call(acronym: acronym, submission_id: submission_id)
+      result = Mobi::OntologySyncService.new(acronym: acronym, submission_id: submission_id).call
 
       assert_equal "created", result[:status]
       assert_equal acronym, result[:acronym]
@@ -95,7 +95,7 @@ class MobiOntologySyncServiceTest < ActiveSupport::TestCase
       stub_request(:post, "#{@mobi_base}/mobirest/merge-requests/#{CGI.escape(merge_request_id)}/status?action=accept")
         .to_return(status: 200, body: "")
 
-      result = Mobi::OntologySyncService.call(acronym: acronym, submission_id: submission_id)
+      result = Mobi::OntologySyncService.new(acronym: acronym, submission_id: submission_id).call
 
       assert_equal "accepted", result[:status]
       assert_equal acronym, result[:acronym]
