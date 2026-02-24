@@ -141,6 +141,7 @@ class OntologiesController < ApplicationController
       @ontology.delete
       show_new_errors(@submission)
     else
+      enqueue_mobi_sync(@ontology.acronym, @submission.submissionId)
       redirect_to "/ontologies/success/#{@ontology.acronym}"
     end
   end
@@ -516,6 +517,14 @@ class OntologiesController < ApplicationController
 
 
   private
+
+  def enqueue_mobi_sync(acronym, submission_id)
+    return unless Mobi::OntologySyncService.enabled?
+
+    MobiSyncSubmissionJob.perform_later(acronym: acronym, submission_id: submission_id)
+  rescue StandardError => e
+    Rails.logger.error("Failed to enqueue Mobi sync for #{acronym}: #{e.class} - #{e.message}")
+  end
 
   def get_views(ontology)
     views = ontology.explore.views || []
