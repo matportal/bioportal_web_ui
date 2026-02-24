@@ -495,7 +495,7 @@ module Mobi
     end
 
     def mobi_headers
-      headers = { accept: :json }
+      headers = { accept: "*/*" }
       headers["X-Forwarded-Preferred-Username"] = sync_username
       headers["X-Forwarded-Email"] = sync_email if sync_email.present?
       headers[:authorization] = "Bearer #{sync_bearer_token}"
