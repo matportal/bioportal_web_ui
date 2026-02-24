@@ -557,14 +557,16 @@ module Mobi
     def keycloak_token_url
       @keycloak_token_url ||= begin
         configured = ENV["MOBI_SYNC_TOKEN_URL"].to_s.strip
-        next configured unless configured.blank?
-
-        keycloak_site = ENV["KEYCLOAK_SITE"].to_s.strip
-        keycloak_realm = ENV["KEYCLOAK_REALM"].to_s.strip
-        if keycloak_site.present? && keycloak_realm.present?
-          "#{keycloak_site.chomp('/')}/realms/#{CGI.escape(keycloak_realm)}/protocol/openid-connect/token"
+        if configured.present?
+          configured
         else
-          raise "MOBI_SYNC_TOKEN_URL is not configured and KEYCLOAK_SITE/KEYCLOAK_REALM are unavailable"
+          keycloak_site = ENV["KEYCLOAK_SITE"].to_s.strip
+          keycloak_realm = ENV["KEYCLOAK_REALM"].to_s.strip
+          if keycloak_site.present? && keycloak_realm.present?
+            "#{keycloak_site.chomp('/')}/realms/#{CGI.escape(keycloak_realm)}/protocol/openid-connect/token"
+          else
+            raise "MOBI_SYNC_TOKEN_URL is not configured and KEYCLOAK_SITE/KEYCLOAK_REALM are unavailable"
+          end
         end
       end
     end
