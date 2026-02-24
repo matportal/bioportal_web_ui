@@ -419,9 +419,9 @@ module Mobi
       url = mobi_url(path, params)
       request_headers = mobi_headers.dup
       request_payload = payload
-      if payload.is_a?(Hash) && !payload_with_file?(payload)
-        request_headers[:content_type] = :json
-        request_payload = payload.to_json
+      if payload.is_a?(Hash)
+        request_payload = payload.dup
+        request_payload[:multipart] = true unless payload_with_file?(request_payload)
       end
 
       response = RestClient::Request.execute(

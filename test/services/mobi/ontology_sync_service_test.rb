@@ -81,6 +81,7 @@ class MobiOntologySyncServiceTest < ActiveSupport::TestCase
         .to_return(status: 204, body: "")
 
       stub_request(:post, "#{@mobi_base}/mobirest/catalogs/#{CGI.escape(catalog_id)}/records/#{CGI.escape(record_id)}/branches")
+        .with { |request| request.headers["Content-Type"].to_s.include?("multipart/form-data") }
         .to_return(status: 201, body: feature_branch_id)
 
       stub_request(:put, %r{\A#{Regexp.escape(@mobi_base)}/mobirest/ontologies/#{Regexp.escape(CGI.escape(record_id))}\?})
@@ -90,6 +91,7 @@ class MobiOntologySyncServiceTest < ActiveSupport::TestCase
         .to_return(status: 201, body: "http://mobi.example.org/commits/789")
 
       stub_request(:post, "#{@mobi_base}/mobirest/merge-requests")
+        .with { |request| request.headers["Content-Type"].to_s.include?("multipart/form-data") }
         .to_return(status: 201, body: merge_request_id)
 
       stub_request(:post, "#{@mobi_base}/mobirest/merge-requests/#{CGI.escape(merge_request_id)}/status?action=accept")
