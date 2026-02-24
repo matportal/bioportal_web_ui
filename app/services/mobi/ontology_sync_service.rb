@@ -417,11 +417,18 @@ module Mobi
 
     def mobi_request(method:, path:, params: nil, payload:, expected:)
       url = mobi_url(path, params)
+      request_headers = mobi_headers.dup
+      request_payload = payload
+      if payload.is_a?(Hash) && !payload_with_file?(payload)
+        request_headers[:content_type] = :json
+        request_payload = payload.to_json
+      end
+
       response = RestClient::Request.execute(
         method: method,
         url: url,
-        payload: payload,
-        headers: mobi_headers,
+        payload: request_payload,
+        headers: request_headers,
         verify_ssl: mobi_verify_ssl,
         open_timeout: request_timeout,
         read_timeout: request_timeout
@@ -430,6 +437,12 @@ module Mobi
       raise "Unexpected Mobi response #{code} for #{method.to_s.upcase} #{url}" unless expected.include?(code)
 
       response
+    end
+
+    def payload_with_file?(payload)
+      payload.values.any? do |value|
+        value.is_a?(File) || value.is_a?(Tempfile) || value.respond_to?(:path)
+      end
     end
 
     def mobi_url(path, params = nil)
