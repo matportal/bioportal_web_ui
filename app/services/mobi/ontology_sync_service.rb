@@ -306,6 +306,7 @@ module Mobi
         method: :post,
         path: "/catalogs/#{uri_escape(catalog_id)}/records/#{uri_escape(record_id)}/branches/#{uri_escape(branch_id)}/commits",
         params: { message: "Sync MatPortal #{snapshot.acronym} submission #{snapshot.submission_id}" },
+        payload: nil,
         expected: [201]
       )
       response.body.to_s.strip
@@ -415,7 +416,7 @@ module Mobi
       parse_json_body(response.body)
     end
 
-    def mobi_request(method:, path:, params: nil, payload:, expected:)
+    def mobi_request(method:, path:, params: nil, payload: nil, expected:)
       url = mobi_url(path, params)
       request_headers = mobi_headers.dup
       request_payload = payload
